@@ -28,6 +28,9 @@ def get_stock_price(tiker_name, get_date):
     else:
         return ""
 
+def insert_stock_type_definition():
+    "insert into stock_type_definition(id, stock_type_code, stock_type_name, stock_local,  busu_unit, country) values('{}', '{}', '{}', '{}', '{}', '{}');"
+
 def insert_investor_holdings():
     # Define the SQL statements for batch insert
     with engine.begin() as connection:
