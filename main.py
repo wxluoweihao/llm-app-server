@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+<<<<<<< HEAD
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import AgentFinish
 
@@ -160,6 +161,11 @@ agent_executor = initialize_agent(
     agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
     verbose=True,
 )
+=======
+
+
+app = FastAPI()
+>>>>>>> main
 
 
 @app.get("/")
@@ -167,6 +173,7 @@ async def root():
     return {"message": "Hello World"}
 
 
+<<<<<<< HEAD
 @app.get("/ask/{question}")
 async def ask_quest(question: str):
     print("incoming qestion: " + question)
@@ -174,3 +181,13 @@ async def ask_quest(question: str):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=9000)
+=======
+@app.get("/get_statements")
+async def get_sql_meta(question: str):
+    return """
+    
+    """
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=9000)
+>>>>>>> main
