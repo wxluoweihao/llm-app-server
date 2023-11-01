@@ -333,7 +333,7 @@ def format_time(time_obj):
 
 # Get the starting time
 start_time = time.time()
-engine = create_engine('postgresql+psycopg2://hive:hive@localhost:5432/metastore')
+engine = create_engine('postgresql+psycopg2://flowise:flowise@localhost:5432/flowise')
 connection = engine.connect()
 # tiker_list = get_stock_list()
 

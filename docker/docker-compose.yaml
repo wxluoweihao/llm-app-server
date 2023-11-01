@@ -1,26 +1,11 @@
 version: "3.9"
 services:
-#  hive:
-#    build: ./hive
-#    entrypoint: /init-hive.sh
-#    ports:
-#      - "9083:9083"
-#      - "10000:10000"
-#      - "10002:10002"
-#    depends_on:
-#      - postgres
-#      - minio
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "0.5"
-#          memory: 500M
   postgres:
     image: postgres:latest
     environment:
-      - POSTGRES_USER=hive
-      - POSTGRES_PASSWORD=hive
-      - POSTGRES_DB=metastore
+      - POSTGRES_USER=flowise
+      - POSTGRES_PASSWORD=flowise
+      - POSTGRES_DB=flowise
       - POSTGRES_HOST_AUTH_METHOD=md5
       - POSTGRES_INITDB_ARGS=--auth-host=md5
     volumes:
@@ -49,50 +34,54 @@ services:
           cpus: "1"
           memory: 1G
 
-#  trino-coordinator:
-#    image: "trinodb/trino:latest"
-#    ports:
-#      - '8080:8080'
-#    volumes:
-#      - ./trino/coordinator/etc:/etc/trino:ro
-#    depends_on:
-#      - hive
-#      - trino-worker
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "2"
-#          memory: 3G
-#
-#  trino-worker:
-#    image: "trinodb/trino:latest"
-#    volumes:
-#      - ./trino/worker/etc:/etc/trino:ro
-#    depends_on:
-#      - hive
-#    deploy:
-#      mode: replicated
-#      replicas: 2
-#      resources:
-#        limits:
-#          cpus: "2"
-#          memory: 6G
+  trino-coordinator:
+    image: "trinodb/trino:latest"
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./trino/coordinator/etc:/etc/trino:ro
+    depends_on:
+      - trino-worker
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 3G
 
-#  superset:
-#    build: ./superset
-#    ports:
-#      - "8088:8088"
-#    volumes:
-#      - superset-data:/app/superset_home
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "1"
-#          memory: 1G
+  trino-worker:
+    image: "trinodb/trino:latest"
+    volumes:
+      - ./trino/worker/etc:/etc/trino:ro
+    deploy:
+      mode: replicated
+      replicas: 2
+      resources:
+        limits:
+          cpus: "2"
+          memory: 6G
+
+  flowise:
+    build: ./flowise
+    ports:
+      - "3000:3000"
+    depends_on:
+      - trino-coordinator
+    environment:
+      LOG_LEVEL: debug
+    command: /bin/sh -c "sleep 3; flowise start"
+
+#  autogen:
+#    build: ./autogen
+  trino-ai-assistant:
+    build: ./trino-ai-assistant
+    environment:
+      openai_api_key: your openai key
+    ports:
+      - "9080:9080"
+      - "7080:7080"
+
 volumes:
   minio-data:
     driver: local
   postgres-data:
-    driver: local
-  superset-data:
     driver: local

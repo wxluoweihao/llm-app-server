@@ -1,0 +1,19 @@
+server:
+  port: 7080
+  servlet:
+    context-path: /trino
+
+logging:
+  level:
+    root: debug
+
+trino:
+  url: jdbc:trino://trino-coordinator:8080
+  filter:
+    catalogs:
+      - system
+    schemas:
+      - information_schema
+
+langchain:
+  openai-api-key: ${openai_api_key}
