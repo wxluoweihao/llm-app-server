@@ -1,11 +1,13 @@
 package io.github.openprojectx.ai.trino.assistant.resource
 
+import io.github.openprojectx.ai.trino.assistant.service.MetaDataAIService
 import io.github.openprojectx.ai.trino.assistant.service.TrinoAIService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController("/db")
 class DatabaseResource(
     val trinoAIService: TrinoAIService,
+    val metaDataAIService: MetaDataAIService,
 ) {
 
     @GetMapping(
@@ -53,7 +56,7 @@ class DatabaseResource(
         return trinoAIService.getTableSchemas()
     }
 
-//    @GetMapping("/answer")
+    //    @GetMapping("/answer")
     fun answer(question: String): String {
         return trinoAIService.answer(question)
 
@@ -84,5 +87,10 @@ class DatabaseResource(
         sql: String
     ): String {
         return trinoAIService.runSql(sql)
+    }
+
+    @PostMapping("/metadata/question", consumes = [MediaType.TEXT_PLAIN_VALUE])
+    fun getAnswerForMetadata(@RequestBody question: String): String {
+        return metaDataAIService.getAnswerForMetadata(question)
     }
 }

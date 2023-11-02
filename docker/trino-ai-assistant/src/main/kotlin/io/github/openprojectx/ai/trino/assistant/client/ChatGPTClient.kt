@@ -20,4 +20,5 @@ interface ChatGPTClient {
     fun initMetadata(initPrompt: String): String?
 
     fun testToSql(question: String?): String?
+
 }
