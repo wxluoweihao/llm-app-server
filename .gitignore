@@ -1,4 +1,5 @@
 # OS junk files
+**/.idea
 [Tt]humbs.db
 **/.DS_Store
 **/utils.py
