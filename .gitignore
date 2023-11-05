@@ -45,3 +45,4 @@ _ReSharper*/
 # Microsoft Office temporary files
 ~$*
 /.idea/
+.idea
