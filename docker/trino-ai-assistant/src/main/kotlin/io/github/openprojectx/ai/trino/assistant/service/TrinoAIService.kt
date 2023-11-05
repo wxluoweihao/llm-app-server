@@ -13,6 +13,11 @@ class TrinoAIService(
     val trinoRepo: TrinoRepo,
     val chatGPTClient: ChatGPTClient
 ) {
+
+    companion object{
+        private const val TRINO_COMMENT: String = "--"
+    }
+
     fun getTableSchemas(): String {
         return trinoRepo.showCatalogs()
             .flatMap { catalog ->
@@ -21,6 +26,28 @@ class TrinoAIService(
                         trinoRepo.showTablesFrom("$catalog.$schema")
                             .flatMap { table ->
                                 trinoRepo.showCreateTable("$catalog.$schema.$table")
+                            }
+                    }
+            }
+            .joinToString(";\n")
+    }
+
+    fun getTableSchemasAndSampleData(): String {
+        return trinoRepo.showCatalogs()
+            .flatMap { catalog ->
+                trinoRepo.showSchemasFrom(catalog)
+                    .flatMap { schema ->
+                        trinoRepo.showTablesFrom("$catalog.$schema")
+                            .flatMap { table ->
+                                trinoRepo.showCreateTable("$catalog.$schema.$table")
+                                    .map { tableSchema ->
+                                        val sampleData = runSql("select * from $catalog.$schema.$table limit 3")
+                                            .lines().joinToString("\n") { line ->
+                                                "$TRINO_COMMENT $line"
+                                            }
+
+                                        "$tableSchema\n-- sample data for table $catalog.$schema.$table in CSV format:\n$sampleData"
+                                    }
                             }
                     }
             }

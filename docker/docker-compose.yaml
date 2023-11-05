@@ -35,7 +35,7 @@ services:
           memory: 1G
 
   trino-coordinator:
-    image: "trinodb/trino:latest"
+    image: "trinodb/trino:431"
     ports:
       - '8080:8080'
     volumes:
@@ -49,7 +49,7 @@ services:
           memory: 3G
 
   trino-worker:
-    image: "trinodb/trino:latest"
+    image: "trinodb/trino:431"
     volumes:
       - ./trino/worker/etc:/etc/trino:ro
     deploy:

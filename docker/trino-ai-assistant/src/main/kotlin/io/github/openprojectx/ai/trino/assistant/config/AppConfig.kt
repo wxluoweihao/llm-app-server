@@ -35,7 +35,11 @@ class AppConfig {
     fun chatGPTClient(@Value("\${langchain.openai-api-key}") openaiAPIKey: String): ChatGPTClient {
         val builder: OpenAiChatModel.OpenAiChatModelBuilder = OpenAiChatModel.builder()
             .apiKey(openaiAPIKey)
-            .timeout(Duration.ofSeconds(60))
+            .logRequests(true)
+            .logResponses(true)
+//            .baseUrl("https://api.duckgpt.top/v1")
+            .baseUrl("https://api.mctools.online/v1")
+            .timeout(Duration.ofSeconds(64))
         System.getenv("http_proxy")?.let { httpProxy ->
             try {
                 val url = URL(httpProxy)
@@ -62,7 +66,11 @@ class AppConfig {
     ): MetadataAIClient {
         val builder: OpenAiChatModel.OpenAiChatModelBuilder = OpenAiChatModel.builder()
             .apiKey(openaiAPIKey)
-            .timeout(Duration.ofSeconds(60))
+            .logRequests(true)
+            .logResponses(true)
+//            .baseUrl("https://api.duckgpt.top/v1")
+            .baseUrl("https://api.mctools.online/v1")
+            .timeout(Duration.ofSeconds(64))
 
         var url: URL? = null;
         System.getenv("http_proxy")?.let { httpProxy ->
@@ -80,6 +88,11 @@ class AppConfig {
         val embeddingModel: EmbeddingModel = OpenAiEmbeddingModel.builder()
             .proxy(proxy)
             .apiKey(openaiAPIKey)
+//            .baseUrl("https://api.duckgpt.top/v1")
+            .baseUrl("https://api.mctools.online/v1")
+            .logRequests(true)
+            .logResponses(true)
+            .timeout(Duration.ofSeconds(64))
             .build()
         val embeddingStore = InMemoryEmbeddingStore<TextSegment>()
 
@@ -95,22 +108,22 @@ class AppConfig {
 //                ingestor.ingest(Document(it.question, Metadata(mapOf("answer" to it.answer))))
 //            }
 
-        val segment1 = TextSegment.from("""
-            there are some additional metadata information:
-            postgresql.public.create table "public".employee
-(
-    id   integer,
-    name varchar
-);
-"
-        """.trimIndent())
-        val embedding1 = embeddingModel.embed(segment1).content()
-        embeddingStore.add(embedding1, segment1)
+//        val segment1 = TextSegment.from("""
+//            there are some additional metadata information:
+//            postgresql.public.create table "public".employee
+//(
+//    id   integer,
+//    name varchar
+//);
+//"
+//        """.trimIndent())
+//        val embedding1 = embeddingModel.embed(segment1).content()
+//        embeddingStore.add(embedding1, segment1)
 
         return AiServices.builder(MetadataAIClient::class.java)
             .chatLanguageModel(model)
             .retriever(EmbeddingStoreRetriever.from(embeddingStore, embeddingModel))
-            .chatMemory(MessageWindowChatMemory.withMaxMessages(Int.MAX_VALUE))
+//            .chatMemory(MessageWindowChatMemory.withMaxMessages(4096))
             .build()
     }
 }
