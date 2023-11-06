@@ -1,0 +1,6 @@
+[
+  {
+    "question": "What are the relevant tables for employee",
+    "answer": "The \"employee\" table contains information about employees, including their employee ID, name, address and email "
+  }
+]
