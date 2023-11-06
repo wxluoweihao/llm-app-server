@@ -2,6 +2,7 @@ package io.github.openprojectx.ai.trino.assistant.resource
 
 import io.github.openprojectx.ai.trino.assistant.service.MetaDataAIService
 import io.github.openprojectx.ai.trino.assistant.service.TrinoAIService
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -25,7 +26,7 @@ class DatabaseResource(
     )
     @Operation(
         summary = "Get all the table schema information",
-        description = "Returns all the table schema information using Trino DDL sql",
+        description = "Returns all the table schema information using Trino DDL sql. You should always get the latest table schema information first before you use run a SQL",
         responses = [
             ApiResponse(
                 responseCode = "200",
@@ -64,7 +65,7 @@ class DatabaseResource(
 
     @PostMapping("/sql", consumes = ["application/sql"], produces = ["application/csv"])
     @Operation(
-        description = "run a valid trio sql and get the csv results",
+        description = "run a valid trio sql and get the csv results. You should always call the /table/schema API first to get table schema information",
         responses = [ApiResponse(
             responseCode = "200",
             description = "successfully returns all the CSV result for the SQL, the first line is the column name header",
@@ -89,6 +90,7 @@ class DatabaseResource(
         return trinoAIService.runSql(sql)
     }
 
+    @Hidden
     @PostMapping("/metadata/question", consumes = [MediaType.TEXT_PLAIN_VALUE])
     fun getAnswerForMetadata(@RequestBody question: String): String {
         return metaDataAIService.getAnswerForMetadata(question)

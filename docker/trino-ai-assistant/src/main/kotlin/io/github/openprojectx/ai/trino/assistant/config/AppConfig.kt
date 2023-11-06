@@ -32,13 +32,16 @@ class AppConfig {
 
 
     @Bean
-    fun chatGPTClient(@Value("\${langchain.openai-api-key}") openaiAPIKey: String): ChatGPTClient {
+    fun chatGPTClient(
+        @Value("\${langchain.openai-api-key}") openaiAPIKey: String,
+        @Value("\${langchain.openai-api-base-url}") baseURl: String
+    ): ChatGPTClient {
         val builder: OpenAiChatModel.OpenAiChatModelBuilder = OpenAiChatModel.builder()
             .apiKey(openaiAPIKey)
             .logRequests(true)
             .logResponses(true)
 //            .baseUrl("https://api.duckgpt.top/v1")
-            .baseUrl("https://api.mctools.online/v1")
+            .baseUrl(baseURl)
             .timeout(Duration.ofSeconds(64))
         System.getenv("http_proxy")?.let { httpProxy ->
             try {
@@ -61,6 +64,7 @@ class AppConfig {
     @Bean
     fun metadataAIClient(
         @Value("\${langchain.openai-api-key}") openaiAPIKey: String,
+        @Value("\${langchain.openai-api-base-url}") baseURl: String,
         @Value("classpath:HintDocument.json") hintDocumentResource: Resource,
         objectMapper: ObjectMapper,
     ): MetadataAIClient {
@@ -69,38 +73,48 @@ class AppConfig {
             .logRequests(true)
             .logResponses(true)
 //            .baseUrl("https://api.duckgpt.top/v1")
-            .baseUrl("https://api.mctools.online/v1")
+            .baseUrl(baseURl)
             .timeout(Duration.ofSeconds(64))
 
-        var url: URL? = null;
+        var url: URL?
+        var proxy: Proxy? = null
         System.getenv("http_proxy")?.let { httpProxy ->
             try {
                 url = URL(httpProxy)
+                proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(url!!.host, url!!.port))
+
             } catch (e: MalformedURLException) {
                 throw RuntimeException("invalid proxy address $httpProxy", e)
             }
         }
-        val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(url!!.host, url!!.port))
-        builder.proxy(proxy)
+        proxy?.let {
+            builder.proxy(proxy)
+
+        }
         val model: ChatLanguageModel = builder
             .build()
 
         val embeddingModel: EmbeddingModel = OpenAiEmbeddingModel.builder()
-            .proxy(proxy)
+            .also { openAiEmbeddingModel ->
+                proxy?.let {
+                    openAiEmbeddingModel.proxy(proxy)
+                }
+
+            }
             .apiKey(openaiAPIKey)
 //            .baseUrl("https://api.duckgpt.top/v1")
-            .baseUrl("https://api.mctools.online/v1")
+            .baseUrl(baseURl)
             .logRequests(true)
             .logResponses(true)
             .timeout(Duration.ofSeconds(64))
             .build()
         val embeddingStore = InMemoryEmbeddingStore<TextSegment>()
 
-        val ingestor = EmbeddingStoreIngestor.builder()
-            .documentSplitter(DocumentByLineSplitter(4096, 4))
-            .embeddingModel(embeddingModel)
-            .embeddingStore(embeddingStore)
-            .build()
+//        val ingestor = EmbeddingStoreIngestor.builder()
+//            .documentSplitter(DocumentByLineSplitter(4096, 4))
+//            .embeddingModel(embeddingModel)
+//            .embeddingStore(embeddingStore)
+//            .build()
 
 //        objectMapper.readerForListOf(HintDocument::class.java)
 //            .readValue<List<HintDocument>?>(hintDocumentResource.inputStream)

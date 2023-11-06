@@ -13,7 +13,7 @@ class MetaDataAIService(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     init {
-        val tableSchemas = trinoAIService.getTableSchemasAndSampleData()
+//        val tableSchemas = trinoAIService.getTableSchemasAndSampleData()
 //        val initResponse = metadataAIClient.initMetadata(tableSchemas)
 //        logger.info("initResponse: {}", initResponse)
     }

@@ -67,15 +67,30 @@ services:
     depends_on:
       - trino-coordinator
     environment:
-      LOG_LEVEL: debug
-    command: /bin/sh -c "sleep 3; flowise start"
+      - DEBUG=true
+      - DATABASE_TYPE=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_HOST=postgres
+      - DATABASE_NAME=flowise
+      - DATABASE_USER=flowise
+      - DATABASE_PASSWORD=flowise
+      - LOG_LEVEL=debug
+#      - LOG_PATH=${LOG_PATH}
+    command: /bin/sh -c "sleep 3; flowise start --DEBUG=true"
 
 #  autogen:
 #    build: ./autogen
-#  trino-ai-assistant:
-#    build: ./trino-ai-assistant
-#    environment:
-#      openai_api_key: your openai key
+
+#  run build.sh in trino-ai-assistant directory first
+  trino-ai-assistant:
+    build: ./trino-ai-assistant
+    environment:
+      openai_api_key: your openai key
+      openai_api_base_url: https://api.mctools.online/v1
+#      if you need proxy to access openai
+#      http_proxy: http://loclahost:10809
+    depends_on:
+      - trino-coordinator
 #    ports:
 #      - "9080:9080"
 #      - "7080:7080"

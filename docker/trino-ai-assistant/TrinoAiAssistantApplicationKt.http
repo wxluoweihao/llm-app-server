@@ -23,4 +23,4 @@ show catalogs
 POST http://localhost:7080/trino/metadata/question
 Content-Type: text/plain
 
-what tables do i need if want to know about stock type price
+what tables do i need if want to know about stocks
